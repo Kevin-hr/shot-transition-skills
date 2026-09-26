@@ -1,0 +1,62 @@
+{
+  "skill": "cut-trace-dual-strategy",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "开始剪辑前不确定该追求丝滑还是做跳切，怎么决定？",
+      "expected_behavior": "调用 cut-trace-dual-strategy，按目标路由：叙事流畅→路线A弱化，制造张力→路线B利用",
+      "notes": "正面场景：路线选择的经典场景"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "用了所有顺滑技巧但视频还是平淡，要不要试试跳切？",
+      "expected_behavior": "调用 cut-trace-dual-strategy，分析是否需要转路线B利用痕迹制造节奏感",
+      "notes": "正面场景：从路线A到路线B的切换判断"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "跳切什么时候用？怎么让剪辑更丝滑？剪辑痕迹是什么意思？",
+      "expected_behavior": "调用 cut-trace-dual-strategy，解释弱化痕迹vs利用痕迹两条路线",
+      "notes": "正面场景：核心关键词触发"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "jump cut什么时候该用？我做个产品视频不确定要不要用跳切",
+      "expected_behavior": "调用 cut-trace-dual-strategy，按视频目标路由——展示细节用弱化，制造期待感用利用",
+      "notes": "正面场景：英文关键词+产品视频决策"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "剪辑点切在哪一帧最合适？动作到顶了的时候切吗？",
+      "expected_behavior": "应该调用 momentum-receive-cutting 而非 cut-trace-dual-strategy，因为问题是具体剪辑点选择",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (momentum-receive-cutting)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "两个镜头接在一起跳，视觉变化差太多了",
+      "expected_behavior": "应该调用 visual-variation-judgment 而非 cut-trace-dual-strategy，因为问题是视觉变量匹配",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (visual-variation-judgment)"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "已经确定要弱化痕迹了，接下来怎么做？",
+      "expected_behavior": "调用 cut-trace-dual-strategy 但在B(边界)段应指出：已确定路线后的具体操作应转向 momentum-receive-cutting",
+      "notes": "边界：路线已确定，应转入具体执行"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "我想做一个match cut（相似转场），既不完全隐藏也不完全暴露，算哪条路线？",
+      "expected_behavior": "调用 cut-trace-dual-strategy 但在B(边界)段应指出：作者未讨论'适度痕迹'的中间地带，match cut不完全属于两条路线中任一条",
+      "notes": "边界：中间地带未覆盖"
+    }
+  ]
+}

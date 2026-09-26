@@ -1,0 +1,62 @@
+{
+  "skill": "shot-composition-spatial-rules",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "我拍多机位素材，两个镜头接在一起觉得跳，机位角度好像没怎么变，是什么问题？",
+      "expected_behavior": "调用 shot-composition-spatial-rules，检查30°原则，角度变化不足导致大脑认为没换镜头",
+      "notes": "正面场景：30°原则经典案例"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "什么是越轴？我拍两个人对话的正反打，机位放那边了切出来感觉怪怪的",
+      "expected_behavior": "调用 shot-composition-spatial-rules，检查180°原则，确认机位是否穿过对话轴线",
+      "notes": "正面场景：180°原则/越轴"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "拍之前怎么规划机位角度？我不想拍完才发现跳",
+      "expected_behavior": "调用 shot-composition-spatial-rules，提前规划30°角度差和180°轴线一侧",
+      "notes": "正面场景：拍摄前规划"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "角度变了但还是跳，主体从右边突然到左边了，怎么回事？",
+      "expected_behavior": "调用 shot-composition-spatial-rules，判断虽然满足30°但越了轴（180°），空间方向错乱",
+      "notes": "正面场景：30°通过但180°失败"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "两个镜头接在一起觉得跳，一个是固定镜头拍人跑步，一个是运动镜头缓慢平移，视觉变化差太多了吧？",
+      "expected_behavior": "应该调用 visual-variation-judgment 而非 shot-composition-spatial-rules，因为问题是视觉变量不匹配",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (visual-variation-judgment)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "我想用跳切做效果，不想管什么空间连续性",
+      "expected_behavior": "应该调用 cut-trace-dual-strategy 路线B，而非 shot-composition-spatial-rules",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (cut-trace-dual-strategy)"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我做的是纯动画/MG动画，需要管30度180度原则吗？",
+      "expected_behavior": "调用 shot-composition-spatial-rules 但在B(边界)段应指出：纯动画/MG无物理机位概念，不适用",
+      "notes": "边界：无物理机位的场景"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "景别从全景切到特写了，这算角度变化够了吗？",
+      "expected_behavior": "调用 shot-composition-spatial-rules，解释景别切换是保证'变化够'的一种手段但不是唯一标准，仍需检查角度差是否≥30°",
+      "notes": "边界：景别切换与30°原则的关系"
+    }
+  ]
+}

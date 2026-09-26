@@ -1,0 +1,49 @@
+# ---- 大素材：不入库 ----
+# 4K 原片、原始素材片段、中间产物一律本地保存，通过 GitHub Release 分发
+*.mp4
+*.mov
+*.mkv
+*.m4s
+*.mp3
+*.wav
+*.aac
+*.flac
+# 例外：仓库内保留的轻量展示小样
+!cases/*/demo-720p.mp4
+
+# 原始素材目录
+素材/
+raw/
+footage/
+_source/
+
+# 第三方内容（版权原因，刻意排除，见 ATTRIBUTION.md）
+source.*
+test-analysis/
+
+# 中间产物与工作区
+_work/
+_local/
+_archive/
+*.raw
+*.bin
+*.tsv
+*.xml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 日志与临时文件
+*.log
+*.tmp

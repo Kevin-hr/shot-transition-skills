@@ -1,0 +1,24 @@
+# 统一换行符，避免跨平台 diff 噪音
+* text=auto
+
+*.md    text eol=lf
+*.py    text eol=lf
+*.json  text eol=lf
+*.html  text eol=lf
+*.yml   text eol=lf
+*.ps1   text eol=crlf
+
+# 二进制：禁止换行转换与文本 diff
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.mp4   binary
+
+# 语言统计归类：文档不计入代码语言占比
+docs/**            linguist-documentation
+cases/**           linguist-documentation
+tutorial/**        linguist-documentation
+skills/**          linguist-documentation
+ATTRIBUTION.md     linguist-documentation
+CHANGELOG.md       linguist-documentation

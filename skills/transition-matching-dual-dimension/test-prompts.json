@@ -1,0 +1,62 @@
+{
+  "skill": "transition-matching-dual-dimension",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "两个骑车镜头接在一起，速度差不多但总觉得不顺，哪里出了问题？",
+      "expected_behavior": "调用 transition-matching-dual-dimension，检查方向匹配——可能一个左→右一个右→左",
+      "notes": "正面场景：方向不匹配的经典案例"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "两个镜头空间规则都过了但还是不够顺，运动镜头的速度不太一样",
+      "expected_behavior": "调用 transition-matching-dual-dimension，检查速度匹配——主体速度/运镜速率/画面节奏是否一致",
+      "notes": "正面场景：速度不匹配，且已排除空间问题"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "为什么速度差不多还是跳？两个运动镜头一个往左一个往右",
+      "expected_behavior": "调用 transition-matching-dual-dimension，指出方向相反=违背物理直觉=跳",
+      "notes": "正面场景：速度匹配但方向不匹配"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "speed matching和direction matching怎么做？我的两个镜头接在一起不顺",
+      "expected_behavior": "调用 transition-matching-dual-dimension，分别检查速度和方向两个维度",
+      "notes": "正面场景：英文关键词触发"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "两个镜头接在一起跳，机位角度差很小而且好像越轴了",
+      "expected_behavior": "应该调用 shot-composition-spatial-rules 而非 transition-matching-dual-dimension，因为问题是空间规则",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (shot-composition-spatial-rules)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "这个镜头该留几秒？信息量好像太大了观众看不过来",
+      "expected_behavior": "应该调用 shot-duration-decision 而非 transition-matching-dual-dimension",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (shot-duration-decision)"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "一个镜头从左向右滑，另一个是产品旋转，速度差不多能接吗？",
+      "expected_behavior": "调用 transition-matching-dual-dimension，指出方向维度不一致（水平vs径向），可能轻微跳，建议第二个镜头加入水平分量",
+      "notes": "边界：速度匹配但运动类型不同"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "我想做跳切效果，速度方向都不匹配也没关系吧？",
+      "expected_behavior": "应转向 cut-trace-dual-strategy 路线B，此 skill 的边界明确排除跳切场景",
+      "notes": "边界：跳切场景"
+    }
+  ]
+}

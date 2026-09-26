@@ -1,0 +1,62 @@
+{
+  "skill": "momentum-receive-cutting",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "剪辑动作视频时纠结切在哪一帧最合适，做做饭视频切菜那段怎么切？",
+      "expected_behavior": "调用 momentum-receive-cutting，识别动作结构（出势=拿刀，接作=刀落下），在刀接触菜的那一帧（结束点）切换",
+      "notes": "正面场景：做饭视频的结束点剪辑"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "3比7是什么？动作剪辑应该按什么比例切？",
+      "expected_behavior": "调用 momentum-receive-cutting，解释3:7只是一个具体数值，核心是出势接作——前镜头出势后镜头接作",
+      "notes": "正面场景：3:7比例的查询"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "剪辑点怎么选？听到什么结束点消失点但不太会用",
+      "expected_behavior": "调用 momentum-receive-cutting，在结束点（动作完成帧）或消失点（主体消失帧）切换",
+      "notes": "正面场景：结束点/消失点概念查询"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "开箱视频，手伸过去拿东西的动作应该在哪一帧切到下一个镜头？",
+      "expected_behavior": "调用 momentum-receive-cutting，手伸过去=出势，拿住东西=结束点，在拿到的那一帧切换",
+      "notes": "正面场景：开箱视频动作剪辑"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "这个镜头该留多久？画面太长了感觉无聊",
+      "expected_behavior": "应该调用 shot-duration-decision 而非 momentum-receive-cutting，因为问题是时长决策",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (shot-duration-decision)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "我想做跳切效果，不要什么出势接作",
+      "expected_behavior": "应该调用 cut-trace-dual-strategy 路线B，而非 momentum-receive-cutting",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (cut-trace-dual-strategy)"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我拍的是静态风景镜头，几乎没有动作，剪辑点选哪有区别吗？",
+      "expected_behavior": "调用 momentum-receive-cutting 但在B(边界)段应指出：静态镜头剪辑点差异不大，时长和组接逻辑更重要",
+      "notes": "边界：静态镜头不适用"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "做的是纯音乐卡点视频，剪辑点完全跟节拍走，还需要考虑结束点吗？",
+      "expected_behavior": "调用 momentum-receive-cutting 但在B(边界)段应指出：纯卡点由音乐节拍决定剪辑点，不适用出势接作",
+      "notes": "边界：纯卡点视频"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "skill": "shot-duration-decision",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "剪辑时不确定某个镜头该留多久，画面信息量挺大的怕观众看不过来",
+      "expected_behavior": "调用 shot-duration-decision，按信息密度定时长，参考人眼感知时间表（0.5-3s看懂主要元素）",
+      "notes": "正面场景：信息密度决定时长"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "观众完播率低，我怀疑是镜头太长了大家觉得无聊",
+      "expected_behavior": "调用 shot-duration-decision，分析是否超过6-8s注意力衰减窗口，或信息密度不足导致无聊",
+      "notes": "正面场景：完播率与镜头时长"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "shot duration怎么定？闪回画面有人物、时钟、光影素材，每个该留多久？",
+      "expected_behavior": "调用 shot-duration-decision，按三层面分配——人物(主要信息)0.5-3s，时钟(辅助情绪)0.3-0.5s，光影(纯过渡)0.1-0.3s",
+      "notes": "正面场景：多元素时长分配"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "快切和长镜头怎么选？我想做个紧张感强的段落",
+      "expected_behavior": "调用 shot-duration-decision，节奏控制层——紧张兴奋用短镜头快切(<1.5s)",
+      "notes": "正面场景：节奏控制层面"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "两个镜头接在一起跳，速度也不太一样方向也反了",
+      "expected_behavior": "应该调用 transition-matching-dual-dimension 而非 shot-duration-decision，因为问题是速度/方向匹配",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (transition-matching-dual-dimension)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "剪辑点应该切在哪一帧？动作快到顶了的时候切吗？",
+      "expected_behavior": "应该调用 momentum-receive-cutting 而非 shot-duration-decision，因为问题是剪辑点选择",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (momentum-receive-cutting)"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我做的是纯卡点视频，时长完全由音乐节奏决定，需要这个框架吗？",
+      "expected_behavior": "调用 shot-duration-decision 但在B(边界)段应指出：纯卡点视频不适用三层面框架，时长由音乐决定",
+      "notes": "边界：纯卡点视频"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "每个镜头不超过3秒对吗？我听人说3秒法则",
+      "expected_behavior": "调用 shot-duration-decision，指出3秒法则过于简化，未考虑信息密度和情绪需求，应按三层面决策",
+      "notes": "边界：3秒法则的debunking"
+    }
+  ]
+}

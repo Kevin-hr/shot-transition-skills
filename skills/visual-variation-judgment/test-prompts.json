@@ -1,0 +1,62 @@
+{
+  "skill": "visual-variation-judgment",
+  "version": "0.1.0",
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "我剪视频的时候两个镜头接在一起觉得有点跳，但不确定是哪里的问题，一个固定镜头拍人站着微笑，一个运动镜头缓慢平移拍风景",
+      "expected_behavior": "调用 visual-variation-judgment，判断两个镜头的视觉变量级别（微笑=静，缓慢平移=静），得出'静接静'可以组接",
+      "notes": "正面场景：视觉变量级别的核心判断"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "动接动静接近到底怎么判断？我拍了个固定镜头里人跑步的，能接运动镜头里缓慢推拉的吗？",
+      "expected_behavior": "调用 visual-variation-judgment，指出固定镜头中跑步=动，运动镜头缓慢推拉=静，不同级别需要调整",
+      "notes": "正面场景：反直觉案例（固定≠静，运动≠动）"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "这两个画面接在一起为什么跳？一个是快速运镜的跑步，一个是人坐着呼吸",
+      "expected_behavior": "调用 visual-variation-judgment，判断跑步=大视觉变量（动），呼吸=小视觉变量（静），动接静导致跳",
+      "notes": "正面场景：经典动/静不匹配"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "怎么判断画面是动还是静？我的镜头里有打太极和流水，这两个能接在一起吗",
+      "expected_behavior": "调用 visual-variation-judgment，判断打太极和流水都是小视觉变量（静），静接静可以组接",
+      "notes": "正面场景：多元素分类"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "我两个镜头接在一起觉得跳，机位角度差不多没怎么变，是不是角度不够？",
+      "expected_behavior": "应该调用 shot-composition-spatial-rules 而非 visual-variation-judgment，因为问题明显是30°原则",
+      "notes": "跨 skill 诱饵：应该触发同书另一个 skill (shot-composition-spatial-rules)"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "帮我查一下什么是蒙太奇剪辑手法",
+      "expected_behavior": "纯信息查询，不应调用任何 skill",
+      "notes": "诱饵：非剪辑操作场景"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我故意想做一个跳切效果，两个镜头视觉变量完全不一样，这样接对吗？",
+      "expected_behavior": "调用 visual-variation-judgment 但在 B(边界)段应指出：刻意制造跳切时不应使用此 skill，应转向 cut-trace-dual-strategy 路线B",
+      "notes": "边界：跳切场景，视觉变量不匹配是故意的"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "我的镜头里光影变化很大但主体没动，这算动还是静？",
+      "expected_behavior": "调用 visual-variation-judgment，光影变化也是视觉变量来源，应纳入综合判断，可能属于'动'",
+      "notes": "边界：光影变化是否计入视觉变量"
+    }
+  ]
+}
