@@ -3,7 +3,7 @@
 > 把一位视频创作者公开分享的**镜头组接方法论**，蒸馏成 **6 个可执行的 Agent Skill**，
 > 并配上一整套**在成片上验证结论**的量化工具。
 >
-> 不是"讲道理"的教程，而是**跑过真实项目、有实测数据**的工程化产物。
+> 不是“讲道理”的教程，而是**跑过真实项目、有实测数据**的工程化产物。
 
 [![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey.svg)](LICENSE-CONTENT.md)
@@ -25,17 +25,27 @@
 
 [▶ 看小样](cases/01-shot-transition-17s/demo-720p.mp4) · [案例详情](cases/01-shot-transition-17s/README.md) · [逐镜拉片教程](tutorial/lapian-tutorial.html)
 
+### 案例 02 · 《她的一天》五部 HDR 故事线短片
+
+`5 条 / 84–99s / 2160×3840 / HEVC 10-bit HLG / 30fps`
+
+把方法论扩展到**批量竖屏 HDR 叙事**：张艺谋风格 + 方向三模式（auto / crop / port）+
+RTX 5060Ti `hevc_nvenc` main10 + SDR 标题卡 `zscale` 转 HLG；5 条不同故事线
+共 114 个去重镜头、与第一版零素材重复，全片 decode 错误 0。
+
+[▶ 案例详情](cases/02-her-day-hdr/README.md) · [HDR 流水线工具](tools/hdr/README.md)
+
 ---
 
 ## 这个仓库的核心主张：结论必须来自最终产物
 
-案例 01 的审计没有停在"源素材看起来还行"——它直接对**导出的成片**做光流方向分析，
+案例 01 的审计没有停在“源素材看起来还行”——它直接对**导出的成片**做光流方向分析，
 逐条对照 6 个 skill，结果查出 **2 处真违规**（同场景方向相反、活跃场景节奏单调），
 这两处光靠肉眼回看很难发现。修复后复测，两项才真正达标。
 
 所以本仓库有一条铁律：
 
-> **任何"匹配 / 一致 / 达标"类结论，都必须在导出的成片上重算一遍。**
+> **任何“匹配 / 一致 / 达标”类结论，都必须在导出的成片上重算一遍。**
 > 代理指标（源素材取样窗口、低分辨率代理片、缩略图目视）**只能用于选材阶段**，不能用于下结论。
 
 这条规矩不是口号：`tools/` 里每个验收脚本都直接读**成片文件**，案例报告里的每个数字都标注了量法。
@@ -55,7 +65,7 @@
 | [`momentum-receive-cutting`](skills/momentum-receive-cutting/SKILL.md) | 出势接作：剪辑点选在哪一帧 |
 | [`cut-trace-dual-strategy`](skills/cut-trace-dual-strategy/SKILL.md) | 剪辑痕迹双策略：弱化 vs 利用（元策略） |
 
-**关系**：`cut-trace-dual-strategy` 是入口元策略，先决定"弱化痕迹"还是"利用跳切"；
+**关系**：`cut-trace-dual-strategy` 是入口元策略，先决定“弱化痕迹”还是“利用跳切”；
 其余 5 个在既定路线下解决具体判据。完整关系图见 [`docs/INDEX.md`](docs/INDEX.md)。
 
 > 方法论总览 → [`docs/METHOD.md`](docs/METHOD.md) · 术语表 → [`docs/GLOSSARY.md`](docs/GLOSSARY.md) · 精华长文 → [`docs/DIGEST.md`](docs/DIGEST.md)
@@ -64,7 +74,7 @@
 
 ## 工具链
 
-这些脚本**真实跑过**上面的案例，覆盖"选镜 → 渲染 → 成片验收"全链路。
+这些脚本**真实跑过**上面的案例，覆盖“选镜 → 渲染 → 成片验收”全链路。
 
 ```bash
 # 选镜阶段
@@ -85,6 +95,11 @@ python tools/verify_delivery.py   <final.mp4> <source.mov>   # 规格总检
 ```
 
 依赖 FFmpeg + Python(numpy, opencv-python)。详细用法、阈值判读见 [`tools/README.md`](tools/README.md)。
+
+> **HDR 竖屏故事线**：面向手机 HLG 素材批量剪多条 4K 竖屏短片的完整流水线
+> （素材盘点 → 抽帧复核 → 三模式方向 auto/crop/port → NVENC main10 输出 HLG →
+> 标题卡 zscale 转 HLG → concat 重编码），见 [`tools/hdr/`](tools/hdr/README.md)，
+> 对应 [案例 02](cases/02-her-day-hdr/README.md)。需 NVIDIA GPU 与带 `zscale` 的 FFmpeg。
 
 ---
 
@@ -107,6 +122,9 @@ cp -r skills/* <your-agent-skills-dir>/
 2. `scan_profile.py` 扫源片 → `select_shots.py` 选镜 → `render_hardcut.ps1` 渲染
 3. 用 6 个验收脚本复核成片，对照案例报告里的实测表
 
+HDR 故事线（案例 02）则按 [`tools/hdr/README.md`](tools/hdr/README.md) 的三步流水线：
+`scan_manifest.py` → `contact_sheets.py` → `build_hlg_films.py`。
+
 ---
 
 ## 目录结构
@@ -117,13 +135,16 @@ cp -r skills/* <your-agent-skills-dir>/
 ├── LICENSE                    # 代码：MIT
 ├── LICENSE-CONTENT.md         # 内容：CC BY 4.0
 ├── ATTRIBUTION.md             # 出处与授权说明（重要）
-├── CONTRIBUTING.md            # 贡献指南（含"铁律"）
+├── CONTRIBUTING.md            # 贡献指南（含“铁律”）
 ├── CODE_OF_CONDUCT.md
 ├── CHANGELOG.md
 ├── skills/                    # 6 个技能（权威版本）
 ├── docs/                      # 方法论 / 术语表 / 索引 / 精华长文
 ├── cases/                     # 真实案例（成片小样 + 报告 + 实测数据）
+│   ├── 01-shot-transition-17s/   # 案例 01：17s 横版
+│   └── 02-her-day-hdr/           # 案例 02：五部 HLG HDR 竖屏故事线
 ├── tools/                     # 可复现的验收脚本
+│   └── hdr/                      # HDR(HLG) 竖屏故事线流水线（案例 02）
 └── tutorial/                  # 17s 成片逐镜拉片教程（HTML）
 ```
 
@@ -144,11 +165,12 @@ cp -r skills/* <your-agent-skills-dir>/
 详见 [`ATTRIBUTION.md`](ATTRIBUTION.md)。
 
 **案例素材**：案例源素材均为本人自拍自有素材；4K 原片体积过大，**不随仓库分发**，
-仓库内只保留 720p 展示小样。
+仓库内只保留 720p 展示小样（案例 01）；案例 02 的 4K HDR 成片仅保留脚本与数据配置，
+不含任何视频。
 
 ---
 
 ## 贡献
 
 欢迎贡献新的 skill、案例或工具。**先读 [`CONTRIBUTING.md`](CONTRIBUTING.md) 里的铁律**——
-我们不接受"看起来对"的结论。
+我们不接受“看起来对”的结论。
