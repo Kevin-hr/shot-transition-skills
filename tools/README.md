@@ -1,10 +1,28 @@
 # 工具集 (`tools/`)
 
-这些脚本不是"演示代码"，而是本项目真实剪辑里**实际跑过、并据以下结论**的验收工具。
-它们回答的是同一个问题：**成片到底达没达标？**（而不是"源素材看起来如何"）
+这些脚本不是“演示代码”，而是本项目真实剪辑里**实际跑过、并据以下结论**的验收工具。
+它们回答的是同一个问题：**成片到底达没达标？**（而不是“源素材看起来如何”）
 
 > **铁律**：结论必须来自最终产物。这些工具全部直接读**成片文件**（或成片的低分辨率代理），
 > 不读源素材取样窗口。详见根目录 [CONTRIBUTING.md](../CONTRIBUTING.md)。
+
+---
+
+## HDR(HLG) 竖屏故事线流水线（案例 02）
+
+面向手机 HLG 素材批量剪多条 4K 竖屏叙事短片的完整工具在 [`hdr/`](hdr/README.md)：
+
+```bash
+set HDR_LIBRARY=D:\my_library
+python hdr/scan_manifest.py     # 盘点：时长/分辨率/旋转/色彩/HLG → manifest.csv
+python hdr/contact_sheets.py overview   # 全库抽帧人工复核
+python hdr/contact_sheets.py deep       # 入选镜头 4 帧复核
+python hdr/build_hlg_films.py    # 三模式方向 + NVENC main10 HLG + concat 重编码
+```
+
+要点：方向三模式（auto/crop/port）、SDR 标题卡 `zscale` 单步转 HLG、
+卡片补静音音轨、concat 必须重编码、软编不可行走 NVENC。
+详见 [`hdr/README.md`](hdr/README.md) 与 [案例 02](../cases/02-her-day-hdr/README.md)。
 
 ---
 
@@ -23,7 +41,7 @@
 | `FFPROBE` | ffprobe 可执行文件路径 | 从 `PATH` 查找 |
 | `STS_WORK` | 中间产物（抽帧、profile、音频 raw）的工作目录 | 系统临时目录下的 `sts-work` |
 
-所有脚本的"镜头时长"参数默认值为 `7,4,3,3,3,6,7`（共 33s）。
+所有脚本的“镜头时长”参数默认值为 `7,4,3,3,3,6,7`（共 33s）。
 换素材时把它改成你自己的时长序列即可。
 
 ---
@@ -40,7 +58,7 @@
 
 > **量法必须一致**：`scan_profile.py`、`select_shots.py`、`measure_boundary.py` 三者的
 > 采样帧率与裁剪窗口是**刻意对齐**的（`fps=6` → `scale=640` → Farneback → 中心裁剪中位数），
-> 否则"选镜时的预测值"和"成片的实测值"不是同一把尺子。改一处就要改三处。
+> 否则“选镜时的预测值”和“成片的实测值”不是同一把尺子。改一处就要改三处。
 
 ## 二、渲染
 
@@ -68,7 +86,7 @@
 | `measure_cut.py` | 逐镜运动速度（成片实测速度差是否 ≤30%） | `python measure_cut.py <video> [label] [durations]` |
 | `measure_boundary.py` | **剪辑点两侧**的运动方向（是否越轴/方向冲突） | `python measure_boundary.py <video> [label] [durations]` |
 | `cut_profile.py` | 每个接缝是硬切还是叠化 | `python cut_profile.py <video> [durations]` |
-| `cut_diff.py` | 跳切风险（切点两侧画面是否"差得不够"） | `python cut_diff.py <video> [durations]` |
+| `cut_diff.py` | 跳切风险（切点两侧画面是否“差得不够”） | `python cut_diff.py <video> [durations]` |
 | `audio_cut_check.py` | 切点音频咔哒声（波形阶跃 vs 局部 p99.9） | `python audio_cut_check.py <video> [durations]` |
 | `verify_delivery.py` | 规格总检：时长/帧数、色彩标签 vs 源片、黑帧/冻结/静音、音视频流等长 | `python verify_delivery.py <final> [source] [durations] [fps]` |
 
@@ -79,7 +97,7 @@
 | 相邻镜速度差 | ≤ 30% |
 | 剪辑点两侧方向 | 不相反（`|dx| ≤ 0.8` 视为无明确方向，不算冲突） |
 | 接缝形态 | 硬切：变化集中在 1 个帧对（约 1/帧率，如 60fps 约 16.7ms） |
-| 跳切差异 | 切点两侧画面平均绝对差 ≥ ~15（越高越"像新镜头"） |
+| 跳切差异 | 切点两侧画面平均绝对差 ≥ ~15（越高越“像新镜头”） |
 | 音频咔哒声 | 切点跳变 ≤ 局部 p99.9 |
 | 黑帧 / 冻结帧 / 静音 | 0 段 |
 
@@ -100,4 +118,5 @@ python verify_delivery.py   "<final.mp4>" "<source.mov>"
 ```
 
 跑完后把每个脚本的结论与 [案例 01 的决策报告](../cases/01-shot-transition-17s/decision-report.md)
-里的实测表对照，看阈值判读是否符合预期。
+里的实测表对照，看阈值判读是否符合预期。HDR 竖屏故事线的批量流水线则见
+[`hdr/README.md`](hdr/README.md)（案例 02）。

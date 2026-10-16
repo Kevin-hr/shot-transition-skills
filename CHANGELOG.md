@@ -2,6 +2,46 @@
 
 本文件记录本项目的所有重要变更，格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [1.1.0] — 2026-10-16
+
+新增案例 02 与 HDR(HLG) 竖屏故事线流水线。
+
+### 新增
+
+- **案例 02 `02-her-day-hdr`**：《她的一天》5 部不同故事线的 4K 竖屏**真 HDR（HLG）**短片
+  （上学日 / 追风 / 牵着你的手 / 童话 / 去看世界，84–99s），张艺谋风格；
+  114 个去重镜头、与第一版 SDR 零素材重复，全片 decode 错误 0。
+  - 含选材剔除清单（画中脸 / 文字模板 / 屏幕录制 / 成人主体等）、逐项验收数据与
+    墨菲定律对抗性审查（主动披露未覆盖项）。
+- **HDR 工具集 `tools/hdr/`**（在消费级 NVIDIA GPU 上实测）：
+  - `scan_manifest.py` — 素材库盘点（时长/分辨率/旋转/位深/色彩/HLG 判定）→ `manifest.csv`
+  - `contact_sheets.py` — 全库抽帧（overview）与入选镜头 4 帧复核（deep）
+  - `storylines.py` — 5 条故事线数据配置（rid / 时长 / 取点 / 章节），自带去重自检
+  - `build_hlg_films.py` — HLG 渲染器：方向三模式（auto/crop/port）+ 标题卡 zscale 转 HLG
+    + `hevc_nvenc main10` + concat 重编码
+  - `build_sdr_day.py` — 张艺谋风格 SDR 基线（auto/crop/hold 三模式的最早实现，作对照）
+  - `manifest.sample.csv` — manifest 字段样例
+- **关键工程经验**（见 `tools/hdr/README.md`）：
+  - 方向不能只看单帧，须读 `rotation` + 编码宽高，按 auto/crop/port 三模式处理；
+  - SDR 标题卡须先 `rgb24` 再 `zscale` 单步写全 in/out 参数转 HLG，NVENC 收 `p010le`；
+  - 标题卡必须补静音音轨；concat 必须重编码（`-c copy` 会产生 non-monotonic DTS）；
+  - 音量用线性系数（`volume=0.72`），负数 dB 会被吞；
+  - 4K 10-bit libx265 约 0.45fps 不可行，NVENC 快约 44 倍；
+  - 只用原生 HLG 素材，不混 SDR 旅行批（转换后画面偏平）。
+
+### 变更
+
+- 更新根 `README.md`、`cases/README.md`、`tools/README.md`，加入案例 02 与 `tools/hdr/` 导航。
+
+### 已知限制
+
+- 案例 02 的 4K HDR 成片（单片 170–220MB）**不随仓库分发**，只提供脚本与数据配置。
+- HDR 流水线依赖 NVIDIA GPU（NVENC）与带 `zscale` 的 FFmpeg；无 N 卡时需自行替换编码器。
+- 案例 02 未做真机 HDR 手机播放与抖音上传后的平台显示验证，结论仅覆盖本地 ffprobe / 解码 / 抽帧。
+- 案例 02 中 `R156` 为 1080p 源放大（2.8s），其余为 4K 原生 HLG。
+
+---
+
 ## [1.0.0] — 2026-09-26
 
 首次公开发布。
@@ -16,7 +56,7 @@
   - `shot-duration-decision` — 镜头时长决策
   - `momentum-receive-cutting` — 出势接作（剪辑点选择）
   - `cut-trace-dual-strategy` — 剪辑痕迹双策略（弱化 vs 利用）
-- **量化验收工具集**（`tools/`）：把"剪得顺不顺"变成可测量的数字——光流测方向与速度、
+- **量化验收工具集**（`tools/`）：把“剪得顺不顺”变成可测量的数字——光流测方向与速度、
   剪辑点边界方向、硬切/叠化判定、音频切点爆音检测、音画同步互相关。
 - **案例 01 `shot-transition-17s`**：17 秒横版成片的完整决策过程、审计报告与实测指标。
 - **拉片教程**（`tutorial/`）：逐镜拉片 + 技能映射的可视化教程。
